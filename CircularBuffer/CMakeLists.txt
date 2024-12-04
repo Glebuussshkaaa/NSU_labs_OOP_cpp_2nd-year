@@ -7,7 +7,7 @@ include_directories(src)
 
 add_executable(CircularBufferTest
         src/CircularBuffer.cpp
-        tests/CircularBufferTest.cpp)
+        test/CircularBufferTest.cpp)
 
 include_directories(/opt/homebrew/Cellar/googletest/1.15.2/include)
 
