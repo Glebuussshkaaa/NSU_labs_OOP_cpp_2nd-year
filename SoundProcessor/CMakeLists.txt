@@ -3,4 +3,12 @@ project(SoundProcessor)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(SoundProcessor src/main.cpp)
+include_directories(src)
+
+add_executable(SoundProcessor src/main.cpp
+        src/Converters.cpp
+        src/ConfigParser.cpp
+        src/CommandParser.cpp
+        src/SoundProcessor.cpp
+        src/WAV.cpp
+)
