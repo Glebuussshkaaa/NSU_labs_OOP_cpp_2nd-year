@@ -38,7 +38,6 @@ void WAV::readStream(std::istream &inputFile) {
     }
 }
 
-
 void WAV::writeHeader(std::ostream &outputFile) const {
     outputFile.write(reinterpret_cast<const char *>(&header), sizeof(WAVHeader));
 }

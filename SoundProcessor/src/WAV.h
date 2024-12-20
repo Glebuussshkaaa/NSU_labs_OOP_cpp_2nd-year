@@ -6,21 +6,21 @@
 #include <cstdint>
 
 typedef struct WAVHeader {
-    char chunkID[4];
-    uint32_t chunkSize;
-    char format[4];
+    char riffHeader[4];       // "RIFF"
+    uint32_t fileSize;        // Общий размер файла минус 8 байт
+    char waveHeader[4];       // "WAVE"
 
-    char subchunk1ID[4];
-    uint32_t subchunk1Size;
-    uint16_t audioFormat;
-    uint16_t numChannels;
-    uint32_t sampleRate;        // Частота дискретизации (например, 44100)
-    uint32_t byteRate;          // Байт в секунду (sample_rate * num_channels * bits_per_sample / 8
-    uint16_t blockAlign;        // Байт на сэмпл (num_channels * bits_per_sample / 8)
-    uint16_t bitsPerSample;     // Бит на сэмпл (например, 16)
+    char fmtChunkMarker[4];   // "fmt "
+    uint32_t fmtChunkSize;    // Размер подданных в fmt-чанке (16 для PCM)
+    uint16_t audioFormat;     // Аудио формат (1 для PCM)
+    uint16_t numChannels;     // Количество каналов (моно = 1, стерео = 2 и т.д.)
+    uint32_t sampleRate;      // Частота дискретизации (например, 44100 Гц)
+    uint32_t byteRate;        // Количество байт в секунду (sampleRate * numChannels * bitsPerSample / 8)
+    uint16_t blockAlign;      // Блоковая выравнивание (numChannels * bitsPerSample / 8)
+    uint16_t bitsPerSample;   // Глубина звука в битах (например, 16 бит)
 
-    char subchunk2ID[4];
-    uint32_t subchunk2Size;
+    char dataChunkHeader[4];  // "data"
+    uint32_t dataSize;        // Размер данных (количество байт аудиоданных)
 } WAVHeader;
 
 
@@ -39,4 +39,3 @@ public:
 
     std::vector<std::array<int16_t, 44100>> &getStream();
 };
-
