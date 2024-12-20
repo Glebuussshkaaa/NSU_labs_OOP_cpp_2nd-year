@@ -6,8 +6,9 @@
 class CommandParser {
 private:
     std::string configPath = "../filesForWork/configFiles/";
-    std::vector<std::string> inputFiles;
-    std::string outputFile = "../filesForWork/outputFiles/";
+    std::vector<std::string> inputFilesPaths;
+    std::string outputFilePath = "../filesForWork/outputFiles/";
+    bool helpMode = false;
 public:
     CommandParser() = default;
 
@@ -15,9 +16,11 @@ public:
 
     [[nodiscard]]std::string getConfigPath() const;
 
-    [[nodiscard]]std::vector<std::string> getInputFiles() const;
+    [[nodiscard]]std::vector<std::string> getInputFilesPaths() const;
 
-    [[nodiscard]]std::string getOutputFile() const;
+    [[nodiscard]]std::string getOutputFilePath() const;
 
-    void printHelp() const;
+    [[nodiscard]] bool getHelpMode() const;
+
+    static void printHelp();
 };

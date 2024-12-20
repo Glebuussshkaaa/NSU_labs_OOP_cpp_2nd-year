@@ -1,6 +1,5 @@
 #include "WAV.h"
 
-
 WAV::WAV(std::istream &inputFile) : header(), stream() {
     if (!inputFile) {
         throw std::runtime_error("Input file stream is not readable.");
@@ -23,9 +22,6 @@ WAV::WAV(std::istream &inputFile) : header(), stream() {
     if (header.sampleRate != 44100) {
         throw std::invalid_argument("Invalid sample rate. Expected 44100 Hz.");
     }
-
-
-
 }
 
 void WAV::readStream(std::istream &inputFile) {
@@ -44,12 +40,10 @@ void WAV::readStream(std::istream &inputFile) {
 
 
 void WAV::writeHeader(std::ostream &outputFile) const {
-
     outputFile.write(reinterpret_cast<const char *>(&header), sizeof(WAVHeader));
 }
 
 void WAV::writeStream(std::ostream &outputFile) const {
-
     for (auto i: this->stream) {
         outputFile.write(reinterpret_cast<const char *> (&i[0]), sizeof(i[0]) * i.size());
     }

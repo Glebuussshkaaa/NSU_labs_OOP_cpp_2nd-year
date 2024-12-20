@@ -53,20 +53,26 @@ public:
 
 class Creator {
 public:
-    [[nodiscard]] virtual Converter *createConverter() const = 0;
+    [[nodiscard]] virtual std::unique_ptr<Converter> createConverter() const = 0;
 };
 
-class CreatorMute : Creator {
+class CreatorMute : public Creator {
 public:
-    [[nodiscard]] Converter *createConverter() const override { return new Mute(); }
+    [[nodiscard]] std::unique_ptr<Converter> createConverter() const override {
+        return std::make_unique<Mute>();
+    }
 };
 
-class CreatorMix : Creator {
+class CreatorMix : public Creator {
 public:
-    [[nodiscard]] Converter *createConverter() const override { return new Mix(); }
+    [[nodiscard]] std::unique_ptr<Converter> createConverter() const override {
+        return std::make_unique<Mix>();
+    }
 };
 
-class CreatorBoost : Creator {
+class CreatorBoost : public Creator {
 public:
-    [[nodiscard]] Converter *createConverter() const override { return new Boost(); }
+    [[nodiscard]] std::unique_ptr<Converter> createConverter() const override {
+        return std::make_unique<Boost>();
+    }
 };

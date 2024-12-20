@@ -1,12 +1,10 @@
 #include "Converters.h"
 #include "WAV.h"
-#include <stdexcept>
-#include <cstdint>
 
 void Mute::setArg(const std::vector<std::string> args) {
     this->start = stoi(args[0]);
     this->end = stoi(args[1]);
-    if (start >= end || start < 0) {  // замена на ноль
+    if (start >= end || start < 0) {
         throw std::invalid_argument("Incorrect interval of time. (Mute)");
     }
 }
@@ -20,7 +18,7 @@ void Mute::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
             stream[i].fill(0);
         }
     } else {
-        for (int j = 500; j < 44100; ++j) {
+        for (int j = 300; j < 44100; ++j) {
             stream[start][j] = 0;
         }
         for (int i = start + 1; i <= end; ++i) {
@@ -35,12 +33,12 @@ void Mix::setArg(const std::vector<std::string> args) {
 }
 
 void Mix::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
-    if (start >= static_cast<int>(stream.size()) || start < 0) {  // замена на ноль
+    if (start >= static_cast<int>(stream.size()) || start < 0) {
         throw std::invalid_argument("Incorrect interval of time. (Mix)");
     }
 
     std::ifstream inputFileStream(this->file, std::ios_base::binary);
-    if (!inputFileStream.good()) { // заменить на другое
+    if (!inputFileStream.good()) {
         throw std::ios_base::failure("Unable to open the file: " + this->file + " (Mix)");
     }
     WAV WAVHeader(inputFileStream);
@@ -56,7 +54,7 @@ void Mix::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
             }
         }
     } else {
-        for (int j = 500; j < 44100; ++j) {
+        for (int j = 300; j < 44100; ++j) {
             stream[start][j] = static_cast<int16_t>((stream[start][j] / 2) + (WAVStream[start][j] / 2));
         }
         for (std::size_t i = start + 1; i <= end; ++i) {
@@ -100,7 +98,7 @@ void Boost::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
             }
         }
     } else {
-        for (int j = 500; j < 44100; ++j) {
+        for (int j = 300; j < 44100; ++j) {
             auto tmp = static_cast<int16_t>(stream[start][j] * boostFactor);
             if (tmp > INT16_MAX) {
                 stream[start][j] = INT16_MAX;
@@ -122,7 +120,5 @@ void Boost::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
                 }
             }
         }
-
     }
-
 }
