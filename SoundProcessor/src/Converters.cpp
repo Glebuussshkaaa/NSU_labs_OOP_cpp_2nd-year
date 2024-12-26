@@ -9,21 +9,13 @@ void Mute::setArg(const std::vector<std::string> args) {
     }
 }
 
-void Mute::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
+void Mute::converting(std::vector<int16_t> &stream) const {
     if (end >= static_cast<int>(stream.size())) {
         throw std::invalid_argument("The 'end' of the time interval exceeds the size of music. (Mute)");
     }
-    if (start > 0) {
-        for (int i = start; i <= end; ++i) {
-            stream[i].fill(0);
-        }
-    } else {
-        for (int j = 300; j < 44100; ++j) {
-            stream[start][j] = 0;
-        }
-        for (int i = start + 1; i <= end; ++i) {
-            stream[i].fill(0);
-        }
+
+    for (int i = start; i <= end; ++i) {
+        stream[i] = 0;
     }
 }
 
@@ -32,7 +24,7 @@ void Mix::setArg(const std::vector<std::string> args) {
     this->start = stoi(args[1]);
 }
 
-void Mix::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
+void Mix::converting(std::vector<int16_t> &stream) const {
     if (start >= static_cast<int>(stream.size()) || start < 0) {
         throw std::invalid_argument("Incorrect interval of time. (Mix)");
     }
@@ -49,18 +41,12 @@ void Mix::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
     std::size_t end = std::min(WAVStream.size(), stream.size());
     if (start > 0) {
         for (std::size_t i = start; i <= end; ++i) {
-            for (int j = 0; j < 44100; ++j) {
-                stream[i][j] = static_cast<int16_t>((stream[i][j] / 2) + (WAVStream[i][j] / 2));
-            }
+            stream[i] = static_cast<int16_t>((stream[i] / 2) + (WAVStream[i] / 2));
         }
     } else {
-        for (int j = 300; j < 44100; ++j) {
-            stream[start][j] = static_cast<int16_t>((stream[start][j] / 2) + (WAVStream[start][j] / 2));
-        }
+        stream[start] = static_cast<int16_t>((stream[start] / 2) + (WAVStream[start] / 2));
         for (std::size_t i = start + 1; i <= end; ++i) {
-            for (int j = 0; j < 44100; ++j) {
-                stream[i][j] = static_cast<int16_t>((stream[i][j] / 2) + (WAVStream[i][j] / 2));
-            }
+            stream[i] = static_cast<int16_t>((stream[i] / 2) + (WAVStream[i] / 2));
         }
     }
 }
@@ -79,45 +65,39 @@ void Boost::setArg(const std::vector<std::string> args) {
     }
 }
 
-void Boost::converting(std::vector<std::array<int16_t, 44100>> &stream) const {
-    if (end > static_cast<int16_t>(stream.size())) {
+void Boost::converting(std::vector<int16_t> &stream) const {
+    if (end > static_cast<int>(stream.size())) {
         throw std::invalid_argument("End of time interval exceeds the size of the stream. (Boost)");
     }
 
     if (start > 0) {
         for (std::size_t i = start; i <= end; ++i) {
-            for (int j = 0; j < 44100; ++j) {
-                auto tmp = static_cast<int16_t>(stream[i][j] * boostFactor);
-                if (tmp > INT16_MAX) {
-                    stream[i][j] = INT16_MAX;
-                } else if (tmp < INT16_MIN) {
-                    stream[i][j] = INT16_MIN;
-                } else {
-                    stream[i][j] = tmp;
-                }
+            auto tmp = static_cast<int16_t>(stream[i] * boostFactor);
+            if (tmp > INT16_MAX) {
+                stream[i] = INT16_MAX;
+            } else if (tmp < INT16_MIN) {
+                stream[i] = INT16_MIN;
+            } else {
+                stream[i] = tmp;
             }
         }
     } else {
-        for (int j = 300; j < 44100; ++j) {
-            auto tmp = static_cast<int16_t>(stream[start][j] * boostFactor);
-            if (tmp > INT16_MAX) {
-                stream[start][j] = INT16_MAX;
-            } else if (tmp < INT16_MIN) {
-                stream[start][j] = INT16_MIN;
-            } else {
-                stream[start][j] = tmp;
-            }
+        auto tmp = static_cast<int16_t>(stream[start] * boostFactor);
+        if (tmp > INT16_MAX) {
+            stream[start] = INT16_MAX;
+        } else if (tmp < INT16_MIN) {
+            stream[start] = INT16_MIN;
+        } else {
+            stream[start] = tmp;
         }
         for (std::size_t i = start + 1; i <= end; ++i) {
-            for (int j = 0; j < 44100; ++j) {
-                auto tmp = static_cast<int16_t>(stream[i][j] * boostFactor);
-                if (tmp > INT16_MAX) {
-                    stream[i][j] = INT16_MAX;
-                } else if (tmp < INT16_MIN) {
-                    stream[i][j] = INT16_MIN;
-                } else {
-                    stream[i][j] = tmp;
-                }
+            tmp = static_cast<int16_t>(stream[i] * boostFactor);
+            if (tmp > INT16_MAX) {
+                stream[i] = INT16_MAX;
+            } else if (tmp < INT16_MIN) {
+                stream[i] = INT16_MIN;
+            } else {
+                stream[i] = tmp;
             }
         }
     }

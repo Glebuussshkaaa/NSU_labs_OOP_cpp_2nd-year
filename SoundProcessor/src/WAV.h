@@ -27,7 +27,7 @@ typedef struct WAVHeader {
 class WAV {
 private:
     WAVHeader header;
-    std::vector<std::array<int16_t, 44100>> stream;
+    std::vector<int16_t> stream;
 public:
     explicit WAV(std::istream &in);
 
@@ -37,5 +37,5 @@ public:
 
     void writeStream(std::ostream &out) const;
 
-    std::vector<std::array<int16_t, 44100>> &getStream();
+    std::vector<int16_t> &getStream();
 };

@@ -25,16 +25,10 @@ WAV::WAV(std::istream &inputFile) : header(), stream() {
 }
 
 void WAV::readStream(std::istream &inputFile) {
-    std::array<int16_t, 44100> second = {0};
+    int16_t sample = 0;
 
-    while (inputFile.read(reinterpret_cast<char *>(&second[0]), sizeof(second[0]) * second.size())) {
-        stream.push_back(second);
-    }
-
-    if (inputFile.gcount() > 0) {
-        std::array<int16_t, 44100> lastSecond = {0};
-        std::memcpy(&lastSecond[0], second.data(), inputFile.gcount());
-        stream.push_back(lastSecond);
+    while (inputFile.read(reinterpret_cast<char *>(&sample), sizeof(sample))) {
+        stream.push_back(sample);
     }
 }
 
@@ -43,11 +37,11 @@ void WAV::writeHeader(std::ostream &outputFile) const {
 }
 
 void WAV::writeStream(std::ostream &outputFile) const {
-    for (auto i: this->stream) {
-        outputFile.write(reinterpret_cast<const char *> (&i[0]), sizeof(i[0]) * i.size());
+    for (auto &sample : this->stream) {
+        outputFile.write(reinterpret_cast<const char *>(&sample), sizeof(sample));
     }
 }
 
-std::vector<std::array<int16_t, 44100>> &WAV::getStream() {
+std::vector<int16_t>  &WAV::getStream() {
     return this->stream;
 }

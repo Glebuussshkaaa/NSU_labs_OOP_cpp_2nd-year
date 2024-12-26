@@ -11,7 +11,7 @@ public:
 
     virtual void setArg(std::vector<std::string> args) = 0;
 
-    virtual void converting(std::vector<std::array<int16_t, 44100>> &stream) const = 0;
+    virtual void converting(std::vector<int16_t> &stream) const = 0;
 };
 
 class Mute : public Converter {
@@ -23,7 +23,7 @@ public:
 
     void setArg(std::vector<std::string> args) override;
 
-    void converting(std::vector<std::array<int16_t, 44100>> &stream) const override;
+    void converting(std::vector<int16_t> &stream) const override;
 };
 
 class Mix : public Converter {
@@ -35,7 +35,7 @@ public:
 
     void setArg(std::vector<std::string> args) override;
 
-    void converting(std::vector<std::array<int16_t, 44100>> &stream) const override;
+    void converting(std::vector<int16_t> &stream) const override;
 };
 
 class Boost : public Converter {
@@ -48,7 +48,7 @@ public:
 
     void setArg(std::vector<std::string> args) override;
 
-    void converting(std::vector<std::array<int16_t, 44100>> &stream) const override;
+    void converting(std::vector<int16_t> &stream) const override;
 };
 
 class Creator {
