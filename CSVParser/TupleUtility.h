@@ -12,17 +12,12 @@ namespace {
     struct size_t_ {
     };
 
-    template<typename Ch, typename Tr, class Tuple>
+    template<typename Ch, typename Tr, typename Tuple>
     std::basic_ostream<Ch, Tr> &printTuple(std::basic_ostream<Ch, Tr> &os, const Tuple &t, size_t_<1>) {
         return os << std::get<std::tuple_size<Tuple>::value - 1>(t);
     }
 
-    template<typename Ch, typename Tr, class Tuple>
-    std::basic_ostream<Ch, Tr> &printTuple(std::basic_ostream<Ch, Tr> &os, const Tuple &t, size_t_<0>) {
-        return os;
-    }
-
-    template<typename Ch, typename Tr, class Tuple, size_t Pos>
+    template<typename Ch, typename Tr, typename Tuple, size_t Pos>
     std::basic_ostream<Ch, Tr> &printTuple(std::basic_ostream<Ch, Tr> &os, const Tuple &t, size_t_<Pos>) {
         os << std::get<std::tuple_size<Tuple>::value - Pos>(t) << ", ";
         return printTuple(os, t, size_t_<Pos - 1>());
@@ -32,9 +27,14 @@ namespace {
     Type readValue(const std::string &row) {
         std::istringstream iss(row);
 
+
         Type value;
         if (!(iss >> value)) {
-            throw std::invalid_argument("Failed to convert string to expected type: " + row);
+            throw std::invalid_argument("Failed to convert string to expected type: " + row + " ");
+        }
+        char remaining;
+        if (iss.get(remaining)) {
+            throw std::invalid_argument("Extra characters found after expected value: " + row);
         }
 
         return value;

@@ -8,6 +8,7 @@
 int main(int argc, const char *argv[]) {
     try {
         CommandParser commandParser;
+
         commandParser.parseOptions(argc, argv);
         if (commandParser.getHelpMode()) {
             return 0;
@@ -21,8 +22,9 @@ int main(int argc, const char *argv[]) {
             std::cerr << "Error opening file: " << CSVFilePath << std::endl;
             return 1;
         }
+
         CSVParser<int, std::string, float> parser(CSVFile, numSkipLines);
-        for (const auto &row : parser) {
+        for (const auto &row: parser) {
             std::cout << row << std::endl;
         }
     } catch (const std::exception &ex) {

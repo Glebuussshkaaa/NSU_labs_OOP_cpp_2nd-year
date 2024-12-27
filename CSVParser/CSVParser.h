@@ -12,7 +12,7 @@
 template<typename ...Args>
 class CSVParser {
 private:
-    std::ifstream &CSVFile;
+    std::ifstream &CSVFileStream;
     char columnSeparator;
     char rowSeparator;
     char wrapperSymbol;
@@ -20,7 +20,7 @@ private:
 
     std::string getRow() {
         std::string row;
-        std::getline(CSVFile, row, rowSeparator);
+        std::getline(CSVFileStream, row, rowSeparator);
         ++currentLineNumber;
         return row;
     }
@@ -51,7 +51,7 @@ private:
     void skipLines(unsigned int NumSkipLines) {
         std::string skippedLine;
         for (unsigned int i = 0; i < NumSkipLines; ++i) {
-            if (!std::getline(CSVFile, skippedLine)) {
+            if (!std::getline(CSVFileStream, skippedLine)) {
                 throw std::ifstream::failure("File does not contain " + std::to_string(NumSkipLines) + " lines");
             }
         }
@@ -60,14 +60,14 @@ private:
 public:
     class InputIterator;
 
-    explicit CSVParser(std::ifstream &CSVFile, unsigned int NumSkipLines = 0, char columnSeparator = ',',
+    explicit CSVParser(std::ifstream &CSVFileStream, unsigned int NumSkipLines = 0, char columnSeparator = ',',
                        char rowSeparator = '\n',
                        char wrapperSymbol = '\"') :
-            CSVFile(CSVFile),
+            CSVFileStream(CSVFileStream),
             columnSeparator(columnSeparator),
             rowSeparator(rowSeparator),
             wrapperSymbol(wrapperSymbol) {
-        if (!CSVFile.is_open()) {
+        if (!CSVFileStream.is_open()) {
             throw std::ifstream::failure("File is not open");
         }
         skipLines(NumSkipLines);
@@ -85,10 +85,6 @@ public:
 template<typename ...Args>
 class CSVParser<Args...>::InputIterator {
 public:
-    using valueType = std::tuple<Args...>;
-    using reference = std::tuple<Args...> &;
-    using pointer = std::tuple<Args...> *;
-
     enum class Mode {
         begin,
         end
@@ -104,20 +100,13 @@ public:
         }
     }
 
-    reference operator*() const {
+    std::tuple<Args...> &operator*() const {
         return *tuplePtr;
     }
-
 
     InputIterator &operator++() {
         updatePtr();
         return *this;
-    }
-
-    InputIterator operator++(int) {
-        InputIterator tmp = *this;
-        updatePtr();
-        return tmp;
     }
 
     bool operator==(const InputIterator &b) const {
@@ -130,12 +119,13 @@ public:
 
 private:
     CSVParser<Args...> &CSVReader;
-    valueType currentTuple;
-    pointer tuplePtr = &currentTuple;
+    std::tuple<Args...> currentTuple;
+    std::tuple<Args...> *tuplePtr = &currentTuple;
 
     void updatePtr() {
         std::string row = CSVReader.getRow();
-        if (row.empty() && !CSVReader.CSVFile.eof()) {
+
+        if (row.empty() && !CSVReader.CSVFileStream.eof()) {
             throw std::invalid_argument(std::to_string(CSVReader.currentLineNumber) + " row is empty");
         }
 
@@ -159,9 +149,9 @@ private:
             makeTuple<Args...>(tuplePtr, rowCells);
         }
         catch (const std::invalid_argument &ex) {
-            std::string msg = ex.what();
-            msg += std::to_string(CSVReader.currentLineNumber) + " row";
-            throw std::invalid_argument(msg);
+            std::string errorMessage = ex.what();
+            errorMessage += std::to_string(CSVReader.currentLineNumber) + " row";
+            throw std::invalid_argument(errorMessage);
         }
     }
 };
